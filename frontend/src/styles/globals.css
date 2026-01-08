@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Leaflet styles */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  border-radius: 0.5rem;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.leaflet-popup-content {
+  margin: 0.75rem 1rem;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Base styles */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+/* Weather icons animation */
+.weather-icon {
+  transition: transform 0.3s ease;
+}
+
+.weather-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Chat message animations */
+.chat-message {
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Map overlay */
+.map-overlay {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000;
+  background: white;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Community badge colors */
+.community-badge {
+  @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.community-madrid { @apply bg-red-100 text-red-800; }
+.community-cataluna { @apply bg-yellow-100 text-yellow-800; }
+.community-andalucia { @apply bg-green-100 text-green-800; }
+.community-valencia { @apply bg-orange-100 text-orange-800; }
+.community-galicia { @apply bg-blue-100 text-blue-800; }
+.community-pais-vasco { @apply bg-emerald-100 text-emerald-800; }
+.community-castilla-y-leon { @apply bg-purple-100 text-purple-800; }
+.community-castilla-la-mancha { @apply bg-amber-100 text-amber-800; }
+.community-aragon { @apply bg-rose-100 text-rose-800; }
+.community-murcia { @apply bg-lime-100 text-lime-800; }
+.community-extremadura { @apply bg-cyan-100 text-cyan-800; }
+.community-asturias { @apply bg-teal-100 text-teal-800; }
+.community-navarra { @apply bg-indigo-100 text-indigo-800; }
+.community-cantabria { @apply bg-pink-100 text-pink-800; }
+.community-la-rioja { @apply bg-fuchsia-100 text-fuchsia-800; }

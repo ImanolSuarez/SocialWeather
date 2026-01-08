@@ -1,0 +1,258 @@
+{
+  "name": "FlujoChatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "={{ $env.FLUJO_URL }}",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1216,
+        -208
+      ],
+      "id": "498c4e08-b42c-4f28-bcd6-c9618ed31bb1",
+      "name": "Webhook",
+      "webhookId": "3ee11762-05c3-4775-a9db-979d29014a4e"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres SocialWeather Bot, un asistente virtual especializado en información meteorológica de España. Tu objetivo es ayudar a los usuarios con consultas sobre el clima de ciudades españolas.\nIMPORTANTE: Primero utiliza la tool para obtener el clima con el id indicado.\nCAPACIDADES\n- Puedes consultar el pronóstico del tiempo para cualquier ciudad de España peninsular\n- Proporcionas información sobre temperatura, estado del cielo, probabilidad de precipitación, viento y humedad\n- Hablas en español de forma amigable y cercana\n\nCIUDADES DISPONIBLES\nTienes acceso al clima de las principales ciudades españolas incluyendo:\n- Capitales de provincia: Madrid, Barcelona, Valencia, Sevilla, Zaragoza, Málaga, Murcia, Palma, Bilbao, Alicante, etc.\n- Ciudades importantes: Gijón, Vigo, A Coruña, Cartagena, Móstoles, etc.\n\nINSTRUCCIONES\n1. Obtén el clima de la ciudad indicada utilizando la tool que tienes\n3. Presenta la información de forma clara y resumida:\n   - Estado del cielo (soleado, nublado, lluvia, etc.)\n   - Temperatura actual, máxima y mínima\n   - Probabilidad de lluvia si es relevante\n   - Información del viento si es significativa\n4. Si la tool falla o no hay resultado di que no has podido realizar correctamente la consulta ahora mismo.\n5. Si el usuario pregunta algo no relacionado con el clima, responde amablemente que solo puedes ayudar con información meteorológica\n\nFORMATO DE RESPUESTA\nResponde de forma conversacional y amigable. Usa emojis relacionados con el clima cuando sea apropiado:\n☀️ Soleado | ⛅ Parcialmente nublado | ☁️ Nublado | 🌧️ Lluvia | ⛈️ Tormenta | ❄️ Nieve | 🌡️ Temperatura | 💨 Viento\n\nEJEMPLOS\nUsuario: \"¿Qué tiempo hace en Madrid?\"\nUsa la herramienta de clima con la ciudad \"Madrid\" y responde con los datos obtenidos\n\nUsuario: \"Va a llover mañana en Barcelona?\"\nUsa la herramienta de clima con \"Barcelona\" y enfócate en la probabilidad de precipitación\n\nUsuario: \"Hola\"\nSaluda y pregunta en qué ciudad quiere consultar el clima\n\nAquí tienes el mensaje del usuario:\n{{ $('Webhook').item.json.query.message }}\nY el Id y ciudad de la consulta: Id: {{ $json.output[0].id }} Ciudad: {{ $json.output[0].nombre }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -736,
+        -208
+      ],
+      "id": "53f8d3db-7b09-448f-8ffb-5fdece7fe029",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Busca una ciudad española y obtiene su pronóstico del tiempo. Usa esta herramienta cuando el usuario pregunte por el clima, tiempo, temperatura o lluvia de una ciudad, para obtener su ciudad.",
+        "url": "http://weather:4002/weather/municipios/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=q",
+              "value": "={{ $fromAI('ciudad', 'El nombre de la ciudad española a consultar') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        -992,
+        48
+      ],
+      "id": "268fcc65-bb74-4e29-bc53-fcbde39f609f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        48
+      ],
+      "id": "dc80a41b-3139-4baf-95f7-fe7435b6a47b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "wx9kIN7QO50Iagwo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Utiliza esta tool para obtener el clima de la ciudad con el ID indicado",
+        "url": "=http://weather:4002/weather/forecast/{{ $json.output[0].id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        -528,
+        32
+      ],
+      "id": "fe1b00a7-dbd7-4459-8e1d-42e6f5a351d1",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres SocialWeather Bot, un asistente virtual especializado en información meteorológica de España. Tu objetivo es ayudar a los usuarios con consultas sobre el clima de ciudades españolas.\n\nCAPACIDADES\n- Puedes consultar el pronóstico del tiempo para cualquier ciudad de España peninsular\n- Proporcionas información sobre temperatura, estado del cielo, probabilidad de precipitación, viento y humedad\n- Hablas en español de forma amigable y cercana\n\nCIUDADES DISPONIBLES\nTienes acceso al clima de las principales ciudades españolas incluyendo:\n- Capitales de provincia: Madrid, Barcelona, Valencia, Sevilla, Zaragoza, Málaga, Murcia, Palma, Bilbao, Alicante, etc.\n- Ciudades importantes: Gijón, Vigo, A Coruña, Cartagena, Móstoles, etc.\n\nINSTRUCCIONES\n1. Cuando el usuario pregunte por el clima de una ciudad, usa la herramienta de clima para obtener la información\n2. Si el usuario no especifica una ciudad, pregúntale amablemente qué ciudad le interesa\n3. devuelve un Json con los datos especificados de la manera indicada\nEJEMPLOS\nUsuario: \"¿Qué tiempo hace en Madrid?\"\n\nUsa la herramienta de clima con la ciudad \"Madrid\" y responde con los datos obtenidos\n\nUsuario: \"Va a llover mañana en Barcelona?\"\nUsa la herramienta de clima con \"Barcelona\" y obten su informacion\n\nUsuario: \"Hola\"\nSaluda y pregunta en qué ciudad quiere consultar el clima\n\nAqui tienes el mensaje del usuario:\n{{ $json.query.message }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1040,
+        -208
+      ],
+      "id": "0f42045b-b13c-47f5-98d1-bd9db0c674a6",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        16
+      ],
+      "id": "2a4f6567-fef4-493e-b005-fb6d035d758e",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "wx9kIN7QO50Iagwo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "\n[\n  \n{\n  \n  \n\"id\": \n\"48020\",\n  \n  \n\"nombre\": \n\"Bilbao\",\n  \n  \n\"provincia\": \n\"Vizcaya\",\n  \n  \n\"comunidad\": \n\"pais-vasco\",\n  \n  \n\"lat\": \n43.263,\n  \n  \n\"lng\": \n-2.935\n  \n}\n]"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -848,
+        80
+      ],
+      "id": "d25a0a84-8ef0-44c0-9372-0b548d012d69",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -416,
+        -208
+      ],
+      "id": "235dff06-a575-4575-98eb-3c6394e0b225",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "b75c1df2-fbc9-4294-a2e8-cba8f5a7a04a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "21602c4342fbc5be795d37588e3ef1060cbca84ea42da119b4d76b8d6d91a9c1"
+  },
+  "id": "CI2j5VYJcC6Oc9Ri0BKS2",
+  "tags": []
+}

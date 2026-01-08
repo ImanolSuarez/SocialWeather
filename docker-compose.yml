@@ -1,0 +1,132 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+    depends_on:
+      - gateway
+    networks:
+      - socialweather-network
+    restart: unless-stopped
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - GATEWAY_PORT=${GATEWAY_PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - AUTH_SERVICE_HOST=${AUTH_SERVICE_HOST}
+      - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
+      - WEATHER_SERVICE_HOST=${WEATHER_SERVICE_HOST}
+      - WEATHER_SERVICE_PORT=${WEATHER_SERVICE_PORT}
+    depends_on:
+      - auth
+      - weather
+    networks:
+      - socialweather-network
+    restart: unless-stopped
+  auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    ports:
+      - "4001:4001"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - socialweather-network
+    restart: unless-stopped
+  weather:
+    build:
+      context: ./services/weather
+      dockerfile: Dockerfile
+    ports:
+      - "4002:4002"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - WEATHER_SERVICE_PORT=${WEATHER_SERVICE_PORT}
+      - AEMET_API_KEY=${AEMET_API_KEY}
+      - AEMET_BASE_URL=${AEMET_BASE_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    depends_on:
+      - redis
+    networks:
+      - socialweather-network
+    restart: unless-stopped
+  chatbot: 
+    image: n8nio/n8n:2.2.0
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - FLUJO_URL=flujo_n8n
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - TZ=${TZ}
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - N8N_RUNNERS_N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./services/chatbot/workflows:/home/node/workflows
+    networks:
+      - socialweather-network
+    restart: unless-stopped
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - socialweather-network
+    restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - socialweather-network
+    restart: unless-stopped
+networks:
+  socialweather-network:
+    driver: bridge
+volumes:
+  postgres_data:
+  redis_data:
+  n8n_data:
