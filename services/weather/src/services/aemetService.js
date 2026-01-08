@@ -12,11 +12,6 @@ const aemetClient = axios.create({
 })
 
 const aemetService = {
-  /**
-   * AEMET API uses a two-step process:
-   * 1. Request returns a URL to the actual data
-   * 2. Fetch the data from that URL
-   */
   async fetchData(endpoint) {
     try {
       // Step 1: Get the data URL

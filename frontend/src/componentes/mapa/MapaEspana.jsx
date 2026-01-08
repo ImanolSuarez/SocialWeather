@@ -64,7 +64,6 @@ export default function MapaEspana() {
     cargarMunicipios()
   }, [])
 
-  // Filtrar municipios según nivel de zoom - solo mostrar a partir de zoom 11
   const municipiosVisibles = useMemo(() => {
     if (zoomActual < ZOOM_MINIMO_PARA_NODOS) {
       return []

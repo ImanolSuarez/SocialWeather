@@ -3,9 +3,6 @@ const { cacheService } = require('../services/cacheService')
 const { findMunicipioByCoordinates, searchMunicipiosByName } = require('../utils/municipios')
 
 const weatherController = {
-  /**
-   * Get forecast for a municipio (3 days)
-   */
   async getForecast(req, res) {
     try {
       const { municipioId } = req.params
@@ -14,7 +11,6 @@ const weatherController = {
         return res.status(400).json({ error: 'Invalid municipio ID' })
       }
 
-      // Check cache
       const cacheKey = cacheService.keys.forecast(municipioId)
       const cached = await cacheService.get(cacheKey)
       
@@ -22,10 +18,8 @@ const weatherController = {
         return res.json(cached)
       }
 
-      // Fetch from AEMET
       const forecast = await aemetService.getForecastByMunicipio(municipioId)
       
-      // Cache the result
       await cacheService.set(cacheKey, forecast, cacheService.TTL.FORECAST_DAILY)
 
       res.json(forecast)
@@ -35,9 +29,6 @@ const weatherController = {
     }
   },
 
-  /**
-   * Get current weather by coordinates
-   */
   async getCurrentWeather(req, res) {
     try {
       const { lat, lng } = req.query
@@ -49,14 +40,12 @@ const weatherController = {
       const latitude = parseFloat(lat)
       const longitude = parseFloat(lng)
 
-      // Find the closest municipio
       const municipio = findMunicipioByCoordinates(latitude, longitude)
       
       if (!municipio) {
         return res.status(404).json({ error: 'No municipio found for coordinates' })
       }
 
-      // Check cache
       const cacheKey = cacheService.keys.current(latitude, longitude)
       const cached = await cacheService.get(cacheKey)
       
@@ -64,7 +53,6 @@ const weatherController = {
         return res.json(cached)
       }
 
-      // Get today's forecast as "current" weather
       const forecast = await aemetService.getForecastByMunicipio(municipio.id)
       
       if (!forecast || forecast.length === 0) {
@@ -98,9 +86,6 @@ const weatherController = {
     }
   },
 
-  /**
-   * Get municipio by coordinates
-   */
   async getMunicipioByCoordinates(req, res) {
     try {
       const { lat, lng } = req.query
@@ -112,7 +97,6 @@ const weatherController = {
       const latitude = parseFloat(lat)
       const longitude = parseFloat(lng)
 
-      // Check cache
       const cacheKey = cacheService.keys.municipio(latitude, longitude)
       const cached = await cacheService.get(cacheKey)
       
@@ -126,7 +110,6 @@ const weatherController = {
         return res.status(404).json({ error: 'No municipio found for coordinates' })
       }
 
-      // Cache the result
       await cacheService.set(cacheKey, municipio, cacheService.TTL.MUNICIPIO)
 
       res.json(municipio)
@@ -155,12 +138,8 @@ const weatherController = {
     }
   },
 
-  /**
-   * Get all municipios from AEMET API
-   */
   async getAllMunicipios(req, res) {
     try {
-      // Check cache first (municipios don't change often)
       const cacheKey = 'aemet:all_municipios'
       const cached = await cacheService.get(cacheKey)
       
@@ -168,10 +147,8 @@ const weatherController = {
         return res.json(cached)
       }
 
-      // Fetch from AEMET
       const municipios = await aemetService.getAllMunicipios()
-      
-      // Parse and format the data
+
       const formattedMunicipios = municipios.map(m => ({
         id: m.id?.replace('id', '') || m.codigo_ine || m.id,
         nombre: m.nombre,
@@ -181,9 +158,7 @@ const weatherController = {
         longitud: parseFloat(m.longitud_dec || m.longitud) || null,
         altitud: m.altitud || null,
         capital_provincia: m.capital_provincia || false
-      })).filter(m => m.latitud && m.longitud) // Only include municipios with coordinates
-
-      // Cache for 24 hours (municipios don't change)
+      })).filter(m => m.latitud && m.longitud)
       await cacheService.set(cacheKey, formattedMunicipios, 86400)
 
       res.json(formattedMunicipios)

@@ -16,12 +16,11 @@ function Chatbot() {
   const refFinMensajes = useRef(null)
   const refInput = useRef(null)
 
-  // Auto-scroll al final cuando llegan nuevos mensajes
+  //scroll al final cuando llegan nuevos mensajes
   useEffect(() => {
     refFinMensajes.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensajes])
-
-  // Enfocar input cuando se abre el chat
+  
   useEffect(() => {
     if (estaAbierto && refInput.current) {
       refInput.current.focus()
@@ -49,7 +48,7 @@ function Chatbot() {
         throw new Error('Error en la respuesta del servidor')
       }
 
-      // Parsear la respuesta - puede ser JSON o texto plano
+      // Parsear la respuesta
       let textoMensaje = ''
       const tipoContenido = respuesta.headers.get('content-type')
       

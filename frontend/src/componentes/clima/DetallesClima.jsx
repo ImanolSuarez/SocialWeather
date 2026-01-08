@@ -57,7 +57,6 @@ export default function DetallesClima({ datos }) {
         )}
       </div>
 
-      {/* Índice UV si está disponible */}
       {datos.uvMax && (
         <div className="bg-amber-50 rounded-lg p-3">
           <p className="text-sm font-medium text-amber-800">

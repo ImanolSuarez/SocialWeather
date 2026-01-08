@@ -18,8 +18,6 @@ export default function BarraNavegacion({ vistaActiva, establecerVistaActiva }) 
             <span className="text-3xl">🌦️</span>
             <h1 className="text-xl font-bold text-gray-800">SocialWeather</h1>
           </div>
-
-          {/* Navegación - Escritorio */}
           <nav className="hidden md:flex items-center gap-1">
             {elementosNav.map((elemento) => {
               const Icono = elemento.icono
@@ -59,7 +57,6 @@ export default function BarraNavegacion({ vistaActiva, establecerVistaActiva }) 
         </div>
       </div>
 
-      {/* Navegación - Móvil */}
       <nav className="md:hidden flex border-t border-gray-200">
         {elementosNav.map((elemento) => {
           const Icono = elemento.icono

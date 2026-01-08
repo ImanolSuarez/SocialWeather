@@ -13,15 +13,15 @@ redis.on('error', (err) => {
 })
 
 redis.on('connect', () => {
-  console.log('✅ Redis connected')
+  console.log('Redis connected')
 })
 
-// Cache TTL values (in seconds)
+
 const TTL = {
-  FORECAST_DAILY: 3600,      // 1 hour
-  FORECAST_HOURLY: 1800,     // 30 minutes
-  CURRENT_WEATHER: 600,      // 10 minutes
-  MUNICIPIO: 86400           // 24 hours (static data)
+  FORECAST_DAILY: 3600,      
+  FORECAST_HOURLY: 1800,    
+  CURRENT_WEATHER: 600,      
+  MUNICIPIO: 86400           
 }
 
 const cacheService = {
@@ -66,10 +66,10 @@ async function testRedisConnection() {
   try {
     await redis.connect()
     await redis.ping()
-    console.log('✅ Redis connection established')
+    console.log('Redis connection established')
     return true
   } catch (error) {
-    console.warn('⚠️ Redis connection failed, caching disabled:', error.message)
+    console.warn('Redis connection failed, caching disabled:', error.message)
     return false
   }
 }
