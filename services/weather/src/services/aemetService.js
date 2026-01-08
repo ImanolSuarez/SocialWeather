@@ -14,7 +14,6 @@ const aemetClient = axios.create({
 const aemetService = {
   async fetchData(endpoint) {
     try {
-      // Step 1: Get the data URL
       const response = await aemetClient.get(endpoint)
       
       if (response.data.estado !== 200) {
@@ -27,7 +26,6 @@ const aemetService = {
         throw new Error('No data URL in AEMET response')
       }
 
-      // Step 2: Fetch the actual data
       const dataResponse = await axios.get(dataUrl, { timeout: 10000 })
       return dataResponse.data
     } catch (error) {
@@ -36,27 +34,18 @@ const aemetService = {
     }
   },
 
-  /**
-   * Get daily forecast for a municipality (3-7 days)
-   */
   async getForecastByMunicipio(municipioCode) {
     const endpoint = `/prediccion/especifica/municipio/diaria/${municipioCode}`
     const data = await this.fetchData(endpoint)
     return this.parseForecast(data)
   },
 
-  /**
-   * Get hourly forecast for a municipality
-   */
   async getHourlyForecastByMunicipio(municipioCode) {
     const endpoint = `/prediccion/especifica/municipio/horaria/${municipioCode}`
     const data = await this.fetchData(endpoint)
     return data
   },
 
-  /**
-   * Parse AEMET forecast data into a cleaner format
-   */
   parseForecast(data) {
     if (!data || !data[0] || !data[0].prediccion) {
       return []
@@ -87,15 +76,11 @@ const aemetService = {
     }))
   },
 
-  /**
-   * Get the main sky state for the day
-   */
   getMainSkyState(estadoCielo) {
     if (!estadoCielo || estadoCielo.length === 0) {
       return { value: '11', descripcion: 'Despejado' }
     }
     
-    // Get midday state (around 12:00-15:00) or first available
     const middayState = estadoCielo.find(e => 
       e.periodo === '12-18' || e.periodo === '00-24' || !e.periodo
     ) || estadoCielo[0]
@@ -106,9 +91,6 @@ const aemetService = {
     }
   },
 
-  /**
-   * Get the main wind info for the day
-   */
   getMainWind(viento) {
     if (!viento || viento.length === 0) {
       return { direccion: null, velocidad: null }
@@ -124,9 +106,6 @@ const aemetService = {
     }
   },
 
-  /**
-   * Get the maximum precipitation probability
-   */
   getMaxPrecipitation(probPrecipitacion) {
     if (!probPrecipitacion || probPrecipitacion.length === 0) {
       return 0
@@ -135,17 +114,11 @@ const aemetService = {
     return Math.max(...probPrecipitacion.map(p => parseInt(p.value) || 0))
   },
 
-  /**
-   * Get current observation data for a station
-   */
   async getCurrentObservation(stationCode) {
     const endpoint = `/observacion/convencional/datos/estacion/${stationCode}`
     return await this.fetchData(endpoint)
   },
 
-  /**
-   * Get all municipios from AEMET
-   */
   async getAllMunicipios() {
     const endpoint = `/maestro/municipios`
     return await this.fetchData(endpoint)

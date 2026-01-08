@@ -37,3 +37,12 @@ docker-compose up --build
 | Frontend | http://localhost:3000 |
 | n8n Chatbot | http://localhost:5678 |
 
+### 5. Configuracion del flujo de n8n
+
+Para configurar el flujo de n8n hay que realizar los siguientes pasos:
+
+1. Acceder a la url de n8n antes mencionada.
+2. Crear un nuevo flujo.
+3. Importar el flujo que se encuentra en services\chatbot\workflows llamado FlujoChatBot.
+4. Publicar el Flujo y añadir las credenciales de gemini como {{ %env.GEMINI_API_KEY }}
+

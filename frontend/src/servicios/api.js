@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-// Usar ruta relativa - nginx redirige al gateway
 const URL_API = '/api'
 
 const api = axios.create({
@@ -10,7 +9,6 @@ const api = axios.create({
   }
 })
 
-// Interceptor de peticiones - añadir token de autenticación
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken')
@@ -24,7 +22,6 @@ api.interceptors.request.use(
   }
 )
 
-// Interceptor de respuestas - manejar renovación de token
 api.interceptors.response.use(
   (response) => response,
   async (error) => {

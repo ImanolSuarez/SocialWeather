@@ -76,7 +76,6 @@ const weatherController = {
         uvMax: today.uvMax
       }
 
-      // Cache the result
       await cacheService.set(cacheKey, currentWeather, cacheService.TTL.CURRENT_WEATHER)
 
       res.json(currentWeather)
@@ -119,9 +118,6 @@ const weatherController = {
     }
   },
 
-  /**
-   * Search municipios by name
-   */
   async searchMunicipios(req, res) {
     try {
       const { q } = req.query
