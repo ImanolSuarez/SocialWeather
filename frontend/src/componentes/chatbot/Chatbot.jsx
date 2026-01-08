@@ -16,7 +16,6 @@ function Chatbot() {
   const refFinMensajes = useRef(null)
   const refInput = useRef(null)
 
-  //scroll al final cuando llegan nuevos mensajes
   useEffect(() => {
     refFinMensajes.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensajes])
@@ -115,9 +114,7 @@ function Chatbot() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611l-2.468.412a9 9 0 01-6.334-1.694l-.263-.197a11.5 11.5 0 01-2.07-2.07l-.197-.263a9 9 0 01-1.694-6.334l.412-2.468c.293-1.717 2.379-2.299 3.611-1.067L12.8 7.175" />
-          </svg>
+          <span className="text-2xl">🤖</span>
         )}
       </button>
 
@@ -127,9 +124,7 @@ function Chatbot() {
           {/* Cabecera */}
           <div className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-3 flex items-center gap-3">
             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611l-2.468.412a9 9 0 01-6.334-1.694l-.263-.197a11.5 11.5 0 01-2.07-2.07l-.197-.263a9 9 0 01-1.694-6.334l.412-2.468c.293-1.717 2.379-2.299 3.611-1.067L12.8 7.175" />
-              </svg>
+              <span className="text-xl">🤖</span>
             </div>
             <div>
               <h3 className="font-semibold">Chatbot</h3>
